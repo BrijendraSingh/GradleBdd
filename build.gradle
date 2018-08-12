@@ -37,6 +37,10 @@ dependencies {
     
     testCompile 'io.cucumber:cucumber-java:3.0.2'
     testCompile 'io.cucumber:cucumber-junit:3.0.2'
+    
+    // https://mvnrepository.com/artifact/net.masterthought/cucumber-reporting
+	compile group: 'net.masterthought', name: 'cucumber-reporting', version: '3.19.0'
+    
 }
 
 task runM(type: Test){
