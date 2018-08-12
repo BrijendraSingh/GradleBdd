@@ -10,6 +10,7 @@ import cucumber.api.junit.Cucumber;
 	tags= {"@sample"},	
 	features=".",
 	glue= {"steps"},
-	plugin= {"pretty","html:target/htmlreports" }		
+	plugin= {"pretty","html:target/html/", "json:target/json/single.json" , "rerun:target/rerun/rerun.txt","junit:target/junit/junit.xml"}		
 )
-public class RunCuckes {}
+//
+public class RunCuckesTest {}
