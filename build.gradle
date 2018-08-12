@@ -28,7 +28,15 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     
+    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+	compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.13.0'
+    
+    
     testCompile 'io.cucumber:cucumber-java:3.0.2'
     testCompile 'io.cucumber:cucumber-junit:3.0.2'
+}
+
+task Bp(type: Test){
+	include '**/RunCuckes.class'
 }
 
