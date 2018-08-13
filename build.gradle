@@ -34,115 +34,64 @@ task cucumber(dependsOn: testClasses) {
     }
 }
 
-task runTest(){
-dependsOn assemble , compileTestJava
-doLast{
-	println 'hello'
-	bp()
-	CucumberReport()
-	}
-}
-
-test {
+task runParallelCucumberTest(){
+	dependsOn assemble , compileTestJava
 	doLast{
-		//cucumber()
+		println 'hello'
+		parallelCucuberTest()
+		CucumberReport()
 	}
 }
 
-def bp_n(){
-	println 'Running with parallel forks of:' + System.properties["selenium.parallelForks"]
-	def jenkinsForks = System.properties['selenium.parallelForks'] != null ? Integer.parseInt(System.properties['selenium.parallelForks']):5
-	println jenkinsForks
-	
-	def features = fileTree(dir: "${project.projectDir}/src/test/resources/feature").include '**/*.feature'
-	println features
-	
-	file("${project.projectDir}/target/json").list().each{
-		f ->
-		println f
-		println "${project.projectDir}/target/json/${f}"
-		//delete "${project.projectDir}/target/json/${f}" 	
+task runCucumberReport(){	
+	doLast{
+		CucumberReport()
 	}
-	
-	file("${project.projectDir}/target/html").list().each{
-		f ->
-		println f
-		println "${project.projectDir}/target/html/${f}"
-		//delete "${project.projectDir}/target/html/${f}"
-	}
-	
-	file("${project.projectDir}/target/junit").list().each{
-		f ->
-		println f
-		println "${project.projectDir}/target/junit/${f}"
-		//delete "${project.projectDir}/target/junit/${f}"
-	}
-	
-	file("${project.projectDir}/target/rerun").list().each{
-		f ->
-		println f
-		println "${project.projectDir}/target/rerun/${f}"
-	}
-	
-	GParsExecutorsPool.withPool(jenkinsForks){
-		features.eachParallel {File file ->
-			println "file" + file
-			javaexec {
-				systemProperty 'selenium.browser', System.properties['selenium.browser']
-				
-				main = "cucumber.api.cli.Main"
-				classpath = configuration.cucumberRuntime + sourceSets.main.output + sourceSets.test.output + (sourceSets.test.runtimeClasspath + files("${projectDir}/src/test/resources"))
-				args = ['--tags', "@sample", '--plugin', "junit:target/junit/${file.name}.xml", '--plugin', "html:target/html/${file.name}.html", '--plugin', "json:target/json/${file.name}.json", '--plugin',"rerun:target/rerun/${file.name}_rerun.txt",'-f','pretty','--glue','steps',"${projectDir}/src/test/resources/feature/${file.name}"]
-			}
-		}
-	}
-	
 }
 
-def bp(){
-	def features = fileTree(dir: "${project.projectDir}/src/test/resources/feature").include '**/*.feature'
-	println features
 
-	println 'Running with parallel forks of:' + System.properties["selenium.parallelForks"]
+def parallelCucuberTest(){
+	def features = fileTree(dir: "${project.projectDir}/src/test/resources/feature").include '**/*.feature'
+	//println features
+
+	println 'Running with parallel forks before data:' + System.properties["selenium.parallelForks"]
 	def jenkinsForks = System.properties['selenium.parallelForks'] != null ? Integer.parseInt(System.properties['selenium.parallelForks']):5
-	println jenkinsForks
+	println 'Running with parallel forks after data:' + jenkinsForks
 	
-	println 'Running with parallel forks of:' + System.properties["selenium.browser"]	
+	println 'Running on browser:' + System.properties["selenium.browser"]	
 	
 	file("${project.projectDir}/target/json").list().each{
 		f ->
-		println f
-		println "${project.projectDir}/target/json/${f}"
+		//println f
+		//println "${project.projectDir}/target/json/${f}"
 		delete "${project.projectDir}/target/json/${f}" 	
 	}
 	
 	file("${project.projectDir}/target/html").list().each{
 		f ->
-		println f
-		println "${project.projectDir}/target/html/${f}"
+		//println f
+		//println "${project.projectDir}/target/html/${f}"
 		delete "${project.projectDir}/target/html/${f}"
 	}
 	
 	file("${project.projectDir}/target/junit").list().each{
 		f ->
-		println f
-		println "${project.projectDir}/target/junit/${f}"
+		//println f
+		//println "${project.projectDir}/target/junit/${f}"
 		delete "${project.projectDir}/target/junit/${f}"
 	}
 	
 	file("${project.projectDir}/target/rerun").list().each{
 		f ->
-		println f
-		println "${project.projectDir}/target/rerun/${f}"
+		//println f
+		//println "${project.projectDir}/target/rerun/${f}"
 	}
-
 
 	GParsExecutorsPool.withPool(jenkinsForks){
 		features.eachParallel {File file ->
 			println "file" + file
 			javaexec{	
-				systemProperty 'selenium.browser', System.properties['selenium.browser']
-		       
+				systemProperty 'selenium.browser', System.properties['selenium.browser']		       
 		        main = "cucumber.api.cli.Main"
 		        classpath = configurations.testRuntimeClasspath + sourceSets.main.output + sourceSets.test.output
 		        //args = ['--plugin', 'pretty', '--glue', 'steps', 'src/test/resources']
@@ -161,9 +110,5 @@ def CucumberReport(){
 			}
 }
 
-task runCucumberReport(){	
-	doLast{
-		CucumberReport()
-	}
-}
+
 

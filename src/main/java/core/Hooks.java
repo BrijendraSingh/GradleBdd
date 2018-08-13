@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class Hooks {
 	
@@ -18,14 +19,18 @@ public static WebDriver driver;
 			driver = new ChromeDriver();
 			break;
 		case "MOZILA":
+			System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir")+"/src/main/resources/geckodriver.exe");
+			driver = new FirefoxDriver();
 			break;			
 		case "IE":
 			break;			
 		case "NEW":
 			break;			
-		   default:
+		default:
+			System.out.println(browser + "Not found");
+			break;
 	}
-	System.out.println(driver.toString());
+	//System.out.println(driver.toString());
 	return driver;
 	}
 	

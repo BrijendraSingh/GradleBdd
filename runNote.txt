@@ -1,0 +1,4 @@
+CLI command lines to run parametrized test
+
+gradle -Dselenium.parallelForks=3 -Dselenium.browser=CHROME  runParallelCucumberTest
+gradle -Dselenium.parallelForks=3 -Dselenium.browser=MOZILA  runParallelCucumberTest
