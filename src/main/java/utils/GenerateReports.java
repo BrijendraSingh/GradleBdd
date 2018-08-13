@@ -1,7 +1,9 @@
 package utils;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.masterthought.cucumber.Configuration;
@@ -23,8 +25,8 @@ public class GenerateReports {
 	}
 
 	public static void main(String[] args) {
-
-		File reportOutputDirectory = new File("target/cucumberReports");
+		String timestamp= (new SimpleDateFormat("yyyy.MM.dd.HH.mm").format(new Date())).replace('.','_');
+		File reportOutputDirectory = new File("target/cucumberReports_"+timestamp);
 		List<String> jsonFiles = jsonFiles("target/json/");
 		
 		String buildNumber = "1";
