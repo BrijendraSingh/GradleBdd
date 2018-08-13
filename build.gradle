@@ -9,8 +9,8 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.12'
 	compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.13.0'
-    testCompile 'io.cucumber:cucumber-java:3.0.2'
-    testCompile 'io.cucumber:cucumber-junit:3.0.2'
+   	compile 'io.cucumber:cucumber-java:3.0.2'
+    compile 'io.cucumber:cucumber-junit:3.0.2'
 	compile group: 'net.masterthought', name: 'cucumber-reporting', version: '3.19.0'    
 }
 
@@ -39,7 +39,7 @@ task runParallelCucumberTest(){
 	doLast{
 		println 'Running Parellel Tests.....'
 		parallelCucuberTest()
-		CucumberReport()
+		//CucumberReport()
 	}
 }
 
@@ -55,7 +55,7 @@ def parallelCucuberTest(){
 	//println features
 
 	//println 'Running with parallel forks before data:' + System.properties["selenium.parallelForks"]
-	def jenkinsForks = System.properties['selenium.parallelForks'] != null ? Integer.parseInt(System.properties['selenium.parallelForks']):5
+	def jenkinsForks = System.properties['selenium.parallelForks'] != null ? Integer.parseInt(System.properties['selenium.parallelForks']):1
 	//println 'Running with parallel forks after data:' + jenkinsForks	
 	//println 'Running on browser:' + System.properties["selenium.browser"]	
 	
@@ -84,6 +84,7 @@ def parallelCucuberTest(){
 		f ->
 		//println f
 		//println "${project.projectDir}/target/rerun/${f}"
+		delete "${project.projectDir}/target/rerun/${f}"
 	}
 
 	GParsExecutorsPool.withPool(jenkinsForks){
@@ -97,7 +98,7 @@ def parallelCucuberTest(){
 		        args = ['--tags', "@sample", '--plugin','pretty','--plugin', "junit:target/junit/${file.name}.xml", '--plugin', "html:target/html/${file.name}.html", '--plugin', "json:target/json/${file.name}.json", '--plugin',"rerun:target/rerun/${file.name}_rerun.txt",'--glue','steps',"${projectDir}/src/test/resources/feature/${file.name}"]
 			}
 		}
-	}	
+	}
 }
 
 def CucumberReport(){

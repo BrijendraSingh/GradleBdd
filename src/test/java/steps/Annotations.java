@@ -1,46 +1,46 @@
 package steps;
 
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
-import core.Hooks;
+import framework.Hooks;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
 public class Annotations extends Hooks {
+
 	WebDriver driver;
+	public static Scenario report;
 
 	@Before
-	public void testConfigSetup(Scenario sce) {
-		/*
-		System.out.println("****************BEFORE-Start*********************");
-		System.out.println(sce.getName() + " Started");
-		*/
-		
+	public void testSetup(Scenario sce) {
+
+		report = sce;
 		String browser = System.getProperty("selenium.browser");
 		if (browser != null) {
 			driver = setBrowser(System.getProperty("selenium.browser"));
 		} else {
 			driver = setBrowser(readConfig("browser"));
 		}
-		
-		driver.navigate().to("https://github.com/");
-		/*
-		System.out.println("****************BEFORE-End*********************");
-		System.out.println("");
-		*/
+		sce.write("Driver launched: " + driver.toString());
+
 	}
 
 	@After
 	public void teardown(Scenario sce) {
-		/*
-		System.out.println("****************AFTER-Start*********************8");
-		System.out.println(sce.getName() + " Completed");
-		*/
+
+		if (sce.isFailed()) {
+			final byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+			sce.embed(screenshot, "image/png");
+		}
 		driver.close();
-		/*
-		System.out.println("****************AFTER-End*********************");
-		System.out.println("");
-		*/
+		sce.write("Closed the browser: " + driver.toString());
+
+	}
+
+	public static Scenario getReporter() {
+		return report;
 	}
 }

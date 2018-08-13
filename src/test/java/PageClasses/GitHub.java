@@ -17,15 +17,24 @@ public class GitHub extends GenericUtils {
 	
 	public GitHub() {
 		this.driver = super.driver;
+		
 		PageFactory.initElements(driver, this);
 	}
 	
+	public void launchGit(){
+		driver.navigate().to("https://github.com/");
+		reporter.write("url launched: " + driver.getCurrentUrl());
+		takeSreenshot();
+	}
 	public void getTitle() {
 		System.out.println("Git Hub is launched : "+ driver.getCurrentUrl() + ", title: " +driver.getTitle());
+		//takeSreenshot();
 	}
 	
 	public void getGitMessage() {
 		System.out.println(gitmesages.getText());
+		reporter.write(gitmesages.getText());
+		takeSreenshot();
 	}
 	
 	
