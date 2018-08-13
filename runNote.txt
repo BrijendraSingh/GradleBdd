@@ -1,7 +1,14 @@
-CLI command lines to run parametrized test
-
+###### CLI command lines to run parameterized test
 gradle -Dselenium.parallelForks=3 -Dselenium.browser=CHROME  runParallelCucumberTest
 gradle -Dselenium.parallelForks=3 -Dselenium.browser=MOZILA  runParallelCucumberTest
 
-CLI to generate cucumber report
+## report
 gradle runCucumberReport
+
+###### Re-run failed test case
+gradle -Dselenium.parallelForks=3 -Dselenium.browser=CHROME  runParallelFailedTest
+gradle -Dselenium.parallelForks=3 -Dselenium.browser=MOZILA  runParallelFailedTest
+
+## failed rerun report
+gradle runRerunFailedCucumberReport
+

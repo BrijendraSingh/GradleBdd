@@ -43,9 +43,24 @@ task runParallelCucumberTest(){
 	}
 }
 
+task runParallelFailedTest(){
+	dependsOn assemble , compileTestJava
+	doLast{
+		println 'Re-Running Parellel Failed Tests.....'
+		parallelFailedTest()
+		//CucumberReport()
+	}
+}
+
 task runCucumberReport(){	
 	doLast{
 		CucumberReport()
+	}
+}
+
+task runRerunFailedCucumberReport(){	
+	doLast{
+		reRunFailedCucumberReport()
 	}
 }
 
@@ -90,21 +105,74 @@ def parallelCucuberTest(){
 	GParsExecutorsPool.withPool(jenkinsForks){
 		features.eachParallel {File file ->
 			//println "file" + file
+			String fileWithoutExt = file.name.take(file.name.lastIndexOf('.'))
+			println fileWithoutExt + "******************"
 			javaexec{	
 				systemProperty 'selenium.browser', System.properties['selenium.browser']		       
 		        main = "cucumber.api.cli.Main"
 		        classpath = configurations.testRuntimeClasspath + sourceSets.main.output + sourceSets.test.output
 		        //args = ['--plugin', 'pretty', '--glue', 'steps', 'src/test/resources']
-		        args = ['--tags', "@sample", '--plugin','pretty','--plugin', "junit:target/junit/${file.name}.xml", '--plugin', "html:target/html/${file.name}.html", '--plugin', "json:target/json/${file.name}.json", '--plugin',"rerun:target/rerun/${file.name}_rerun.txt",'--glue','steps',"${projectDir}/src/test/resources/feature/${file.name}"]
+		        args = ['--tags', "@sample", '--plugin','pretty','--plugin', "junit:target/junit/${fileWithoutExt}.xml", '--plugin', "html:target/html/${fileWithoutExt}.html", '--plugin', "json:target/json/${fileWithoutExt}.json", '--plugin',"rerun:target/rerun/${fileWithoutExt}_rerun.txt",'--glue','steps',"${projectDir}/src/test/resources/feature/${file.name}"]
 			}
 		}
 	}
 }
 
+
+
+def parallelFailedTest(){
+	def rerun = fileTree(dir: "${project.projectDir}/target/rerun").include '**/*rerun.txt'
+	println "Failed Rerun file:--->" + rerun
+	def jenkinsForks = System.properties['selenium.parallelForks'] != null ? Integer.parseInt(System.properties['selenium.parallelForks']):1
+	
+	file("${project.projectDir}/target/rerun_output_files/json").list().each{
+		f ->
+		delete "${project.projectDir}/target/rerun_output_files/json/${f}" 	
+	}
+	
+	file("${project.projectDir}/target/rerun_output_files/html").list().each{
+		f ->
+		delete "${project.projectDir}/target/rerun_output_files/html/${f}"
+	}
+	
+	file("${project.projectDir}/target/rerun_output_files/junit").list().each{
+		f ->
+		delete "${project.projectDir}/target/rerun_output_files/junit/${f}"
+	}
+	
+	file("${project.projectDir}/target/rerun_output_files/rerun").list().each{
+		f ->
+		delete "${project.projectDir}/target/rerun_output_files/rerun/${f}"
+	}
+	
+	GParsExecutorsPool.withPool(jenkinsForks){
+		rerun.eachParallel {File file ->
+			String fileWithoutExt = file.name.take(file.name.lastIndexOf('.'))
+			println fileWithoutExt + "******************"
+			javaexec{	
+				systemProperty 'selenium.browser', System.properties['selenium.browser']		       
+		        main = "cucumber.api.cli.Main"
+		        classpath = configurations.testRuntimeClasspath + sourceSets.main.output + sourceSets.test.output
+		        args = ['--plugin','pretty','--plugin', "junit:target/rerun_output_files/junit/${fileWithoutExt}.xml", '--plugin', "html:target/rerun_output_files/html/${fileWithoutExt}.html", '--plugin', "json:target/rerun_output_files/json/${fileWithoutExt}.json", '--plugin',"rerun:target/rerun_output_files/rerun/${fileWithoutExt}_rerun.txt",'--glue','steps',"@${projectDir}/target/rerun/${file.name}"]
+			}
+		}
+	}
+}
+
+
 def CucumberReport(){
 	println "Generating Cucumber Report......"
 	javaexec{	
 	        main = "utils.GenerateReports"
+	        classpath = configurations.testRuntimeClasspath + sourceSets.main.output + sourceSets.test.output
+	        args = []
+			}
+}
+
+def reRunFailedCucumberReport(){
+	println "Generating Cucumber Report......"
+	javaexec{	
+	        main = "utils.GenerateFailedRerunReport"
 	        classpath = configurations.testRuntimeClasspath + sourceSets.main.output + sourceSets.test.output
 	        args = []
 			}
