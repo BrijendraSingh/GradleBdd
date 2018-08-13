@@ -37,7 +37,7 @@ task cucumber(dependsOn: testClasses) {
 task runParallelCucumberTest(){
 	dependsOn assemble , compileTestJava
 	doLast{
-		println 'hello'
+		println 'Running Parellel Tests.....'
 		parallelCucuberTest()
 		CucumberReport()
 	}
@@ -54,11 +54,10 @@ def parallelCucuberTest(){
 	def features = fileTree(dir: "${project.projectDir}/src/test/resources/feature").include '**/*.feature'
 	//println features
 
-	println 'Running with parallel forks before data:' + System.properties["selenium.parallelForks"]
+	//println 'Running with parallel forks before data:' + System.properties["selenium.parallelForks"]
 	def jenkinsForks = System.properties['selenium.parallelForks'] != null ? Integer.parseInt(System.properties['selenium.parallelForks']):5
-	println 'Running with parallel forks after data:' + jenkinsForks
-	
-	println 'Running on browser:' + System.properties["selenium.browser"]	
+	//println 'Running with parallel forks after data:' + jenkinsForks	
+	//println 'Running on browser:' + System.properties["selenium.browser"]	
 	
 	file("${project.projectDir}/target/json").list().each{
 		f ->
@@ -89,7 +88,7 @@ def parallelCucuberTest(){
 
 	GParsExecutorsPool.withPool(jenkinsForks){
 		features.eachParallel {File file ->
-			println "file" + file
+			//println "file" + file
 			javaexec{	
 				systemProperty 'selenium.browser', System.properties['selenium.browser']		       
 		        main = "cucumber.api.cli.Main"
