@@ -12,3 +12,5 @@ gradle -Dselenium.parallelForks=3 -Dselenium.browser=MOZILA  runParallelFailedTe
 ## failed rerun report
 gradle runRerunFailedCucumberReport
 
+test from mac
+
